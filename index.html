@@ -1,32 +1,89 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registration Form</title>
-    <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-        }
-
-        iframe {
-            display: block;
-            width: 100%;
-            height: 100%;
-            border: none;
-            margin: 0;
-            padding: 0;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Offer Letter Acceptance</title>
+  <style>
+    /* Full-screen, no scrollbars, iframe fills the viewport */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #faf6f1; /* fallback while iframe loads */
+    }
+    #app-frame {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    /* Optional: a subtle loading indicator behind the iframe */
+    #loading {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 14px;
+      color: #8a7a66;
+      pointer-events: none;
+      z-index: 1;
+    }
+  </style>
 </head>
 <body>
-    <iframe
-        src="https://script.google.com/macros/s/AKfycbx0tEy5jiDOqaTBZrHCEW_kb8CHDkLhnFKWGcjl7w9av0pVtma2bmoimZmmjcAjT15s/exec">
-    </iframe>
+
+  <!-- Loading text shown until the iframe is ready -->
+  <div id="loading">Loading secure acceptance page…</div>
+
+  <!-- The iframe that hosts your Apps Script web app -->
+  <iframe
+    id="app-frame"
+    title="Offer Letter Acceptance"
+    allow="clipboard-write"
+    referrerpolicy="no-referrer-when-downgrade"
+    sandbox="allow-scripts allow-forms allow-same-origin allow-popups allow-modals">
+  </iframe>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // 1. Read the document ID from the parent URL (?id=...)
+      var params = new URLSearchParams(window.location.search);
+      var docId  = params.get('id');
+
+      // 2. If no ID is present, show a friendly error instead of a blank iframe
+      if (!docId) {
+        document.body.innerHTML =
+          '<div style="display:flex;align-items:center;justify-content:center;' +
+          'height:100vh;font-family:system-ui,sans-serif;color:#8a7a66;' +
+          'text-align:center;padding:24px;">' +
+          '<p>Missing document reference. Please use the link from your acceptance email.</p>' +
+          '</div>';
+        return;
+      }
+
+      // 3. Build the Apps Script URL that will be embedded
+      var APP_SCRIPT_BASE = 'https://script.google.com/macros/s/AKfycbx0tEy5jiDOqaTBZrHCEW_kb8CHDkLhnFKWGcjl7w9av0pVtma2bmoimZmmjcAjT15s/exec';
+      var iframeSrc = APP_SCRIPT_BASE + '?id=' + encodeURIComponent(docId);
+
+      // 4. Point the iframe at the Apps Script web app
+      var frame = document.getElementById('app-frame');
+      frame.src = iframeSrc;
+
+      // 5. Hide the loading placeholder once the iframe finishes loading
+      frame.addEventListener('load', function () {
+        var loader = document.getElementById('loading');
+        if (loader) loader.style.display = 'none';
+      });
+    })();
+  </script>
+
 </body>
 </html>
